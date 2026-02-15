@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Cloud LLM Gateway</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #0ea5e9;
+            --accent: #f59e0b;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --surface: #ffffff;
+            --surface-elevated: #f8fafc;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .particle:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 60%;
+            left: 80%;
+            animation-delay: 4s;
+        }
+
+        .particle:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            top: 80%;
+            left: 20%;
+            animation-delay: 2s;
+        }
+
+        .particle:nth-child(4) {
+            width: 50px;
+            height: 50px;
+            top: 30%;
+            left: 70%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0.3;
+            }
+            25% {
+                transform: translateY(-30px) translateX(20px) scale(1.1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translateY(-60px) translateX(-20px) scale(0.9);
+                opacity: 0.4;
+            }
+            75% {
+                transform: translateY(-30px) translateX(20px) scale(1.05);
+                opacity: 0.6;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .logo-text {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .author-badge {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .author-badge strong {
+            color: #fbbf24;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0 3rem;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .hero-badge .badge-icon {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        /* CTA Button */
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: white;
+            color: #4f46e5;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .cta-button svg {
+            transition: transform 0.3s ease;
+        }
+
+        .cta-button:hover svg {
+            transform: translateX(5px);
+        }
+
+        /* Cloud Providers Section */
+        .providers-section {
+            margin-top: 5rem;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .providers-label {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 2rem;
+        }
+
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .provider-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .provider-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .provider-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .provider-card:hover::before {
+            opacity: 1;
+        }
+
+        .provider-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: var(--logo-bg);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .provider-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .provider-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        /* Features Grid */
+        .features-section {
+            margin-top: 6rem;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-description {
+            font-size: 0.938rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 6rem;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
+        }
+
+        footer a {
+            color: #fbbf24;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #fcd34d;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .providers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">🌐</div>
+                <span class="logo-text">LLM Gateway</span>
+            </div>
+            <div class="author-badge">
+                Created by <strong>Kommuri Bharath</strong>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div class="hero-badge">
+                <span class="badge-icon"></span>
+                <span>Production Ready</span>
+            </div>
+            
+            <h1>Multi-Cloud LLM Gateway</h1>
+            
+            <p class="subtitle">
+                Unified API abstraction layer for seamless integration with multiple AI providers. 
+                Switch between OpenAI, Anthropic, Google, and more with a single interface.
+            </p>
+
+            <a href="/docs" class="cta-button">
+                <span>Explore API Documentation</span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+        </section>
+
+        <section class="providers-section">
+            <div class="providers-label">Supported Cloud Providers</div>
+            
+            <div class="providers-grid">
+                <div class="provider-card" style="--accent-color: #10a37f; --logo-bg: linear-gradient(135deg, #10a37f, #1a7f64);">
+                    <div class="provider-logo">🤖</div>
+                    <div class="provider-name">OpenAI</div>
+                    <div class="provider-status">
+                        <span class="status-dot"></span>
+                        <span>Active</span>
+                    </div>
+                </div>
+
+                <div class="provider-card" style="--accent-color: #d97757; --logo-bg: linear-gradient(135deg, #d97757, #c65a3c);">
+                    <div class="provider-logo">🎭</div>
+                    <div class="provider-name">Anthropic</div>
+                    <div class="provider-status">
+                        <span class="status-dot"></span>
+                        <span>Active</span>
+                    </div>
+                </div>
+
+                <div class="provider-card" style="--accent-color: #4285f4; --logo-bg: linear-gradient(135deg, #4285f4, #3367d6);">
+                    <div class="provider-logo">🔷</div>
+                    <div class="provider-name">Google AI</div>
+                    <div class="provider-status">
+                        <span class="status-dot"></span>
+                        <span>Active</span>
+                    </div>
+                </div>
+
+                <div class="provider-card" style="--accent-color: #0078d4; --logo-bg: linear-gradient(135deg, #0078d4, #005a9e);">
+                    <div class="provider-logo">☁️</div>
+                    <div class="provider-name">Azure OpenAI</div>
+                    <div class="provider-status">
+                        <span class="status-dot"></span>
+                        <span>Active</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-section">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Unified Interface</h3>
+                    <p class="feature-description">
+                        Single API endpoint for all providers. Switch between models without changing your code.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3 class="feature-title">Smart Routing</h3>
+                    <p class="feature-description">
+                        Automatic failover and load balancing across multiple providers for maximum reliability.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Cost Optimization</h3>
+                    <p class="feature-description">
+                        Route requests based on cost, performance, or custom rules to optimize your AI budget.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Secure & Compliant</h3>
+                    <p class="feature-description">
+                        Enterprise-grade security with API key management and request logging.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3 class="feature-title">Analytics Dashboard</h3>
+                    <p class="feature-description">
+                        Real-time monitoring of usage, costs, and performance across all providers.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">Easy Integration</h3>
+                    <p class="feature-description">
+                        Drop-in replacement for OpenAI SDK. Migrate your existing applications in minutes.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Built with ❤️ by <a href="#">Kommuri Bharath</a> | Multi-Cloud LLM Gateway © 2026</p>
+        </footer>
+    </div>
+</body>
+</html>

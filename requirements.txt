@@ -4,3 +4,5 @@ openai
 boto3
 python-dotenv
 pydantic
+sqlalchemy
+jinja2
