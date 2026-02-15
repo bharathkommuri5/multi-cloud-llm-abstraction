@@ -1,0 +1,2 @@
+class LLMProviderError(Exception):
+    pass
