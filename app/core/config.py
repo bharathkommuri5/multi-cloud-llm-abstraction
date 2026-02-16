@@ -15,5 +15,9 @@ class Settings:
     AWS_REGION = os.getenv("AWS_REGION")
     BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID")
 
+    # Google
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+    GOOGLE_MODEL_ID = os.getenv("GOOGLE_MODEL_ID", "gemini-pro")
+
 
 settings = Settings()

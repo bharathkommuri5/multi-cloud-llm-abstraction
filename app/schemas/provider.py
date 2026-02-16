@@ -3,7 +3,7 @@ from datetime import datetime
 
 class ProviderCreate(BaseModel):
     name: str
-    type: str  # azure / bedrock
+    type: str  # azure / bedrock / google
 
 class ProviderResponse(BaseModel):
     id: int

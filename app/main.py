@@ -5,6 +5,8 @@ from app.api.routes import router
 from app.api.admin_routes import admin_router
 from app.core.database import Base, engine
 from app.core.middleware import CorrelationIdMiddleware
+# Import all models to register them with SQLAlchemy
+from app.models import Provider, LLMModel, User, HyperparameterConfig, LLMCallHistory
 
 Base.metadata.create_all(bind=engine)
 
