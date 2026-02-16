@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Integer as IntegerTy
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-import uuid
 from app.core.database import Base
 
 
