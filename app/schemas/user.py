@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr,ConfigDict
 from datetime import datetime
 from uuid import UUID
 
@@ -22,8 +22,7 @@ class UserResponse(BaseModel):
     updated_at: datetime | None
     deleted_at: datetime | None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserDeletionPreview(BaseModel):

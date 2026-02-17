@@ -19,5 +19,13 @@ class Settings:
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
     GOOGLE_MODEL_ID = os.getenv("GOOGLE_MODEL_ID", "gemini-pro")
 
+    # Grok (generic HTTP-based integration)
+    GROK_API_KEY = os.getenv("GROK_API_KEY")
+    GROK_API_URL = os.getenv("GROK_API_URL")
+    GROK_MODEL_ID = os.getenv("GROK_MODEL_ID")
+
+    # API token for simple bearer auth used in Swagger / API access
+    API_TOKEN = os.getenv("API_TOKEN")
+
 
 settings = Settings()

@@ -1,8 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,ConfigDict
 from datetime import datetime
 from typing import Dict, Any
 from uuid import UUID
-
 
 class LLMCallHistoryCreate(BaseModel):
     prompt: str
@@ -33,8 +32,7 @@ class LLMCallHistoryResponse(BaseModel):
     created_at: datetime | None
     deleted_at: datetime | None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LLMCallHistoryFilter(BaseModel):

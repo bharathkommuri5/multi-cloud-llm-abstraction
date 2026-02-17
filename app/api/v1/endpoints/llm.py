@@ -5,6 +5,7 @@ from app.schemas.request import LLMRequest
 from app.schemas.response import LLMResponse
 from app.services.llm_service import LLMService
 from app.api.v1.dependencies import parse_user_id
+from app.core.auth import get_current_user
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ def get_db():
 
 
 @router.post("/generate", response_model=LLMResponse)
-def generate_text(request: LLMRequest, req: Request, db: Session = Depends(get_db)):
+def generate_text(request: LLMRequest, req: Request, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
     """
     Generate text using an LLM
     
