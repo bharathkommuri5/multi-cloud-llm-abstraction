@@ -5,9 +5,9 @@ from app.schemas.auth import GoogleAuthRequest, TokenResponse
 from app.core.config import settings
 from app.models.user import User
 from app.core import config
-from app.core.logger import auth_logger as logger
+from app.utils.logger import auth_logger as logger
+from app.utils.helpers import create_access_token
 import time
-import jwt
 
 # Google verification
 from google.oauth2 import id_token as google_id_token
@@ -65,18 +65,14 @@ def google_sign_in(payload: GoogleAuthRequest, db: Session = Depends(get_db)):
     now = int(time.time())
     exp = now + int(settings.ACCESS_TOKEN_EXPIRE_MINUTES) * 60
 
-    to_encode = {
-        "sub": str(user.id),
-        "email": user.email,
-        "iat": now,
-        "exp": exp,
-    }
-
     if not settings.JWT_SECRET:
         logger.error("JWT secret not configured")
         raise HTTPException(status_code=500, detail="Server JWT secret not configured")
 
-    token = jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALG)
+    token = create_access_token(
+        subject=str(user.id),
+        email=user.email,
+    )
     logger.info(f"Access token issued for user {user.id}")
 
     return TokenResponse(access_token=token)
