@@ -3,7 +3,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from app.core.database import Base, engine
 from app.core.middleware import CorrelationIdMiddleware
-from app.core.logger import config_logger as logger
+from app.core.auth_middleware import AuthMiddleware
+from app.utils.logger import config_logger as logger
 from app.core.config import settings
 from app.api import api_router
 # Import all models to register them with SQLAlchemy
@@ -31,8 +32,12 @@ logger.info("FastAPI application initialized")
 templates = Jinja2Templates(directory="app/templates")
 logger.info("Templates directory initialized")
 
+# Add middleware in reverse order (last added = first executed)
+app.add_middleware(AuthMiddleware)
+logger.info("Auth middleware registered - validates JWT tokens on protected routes")
+
 app.add_middleware(CorrelationIdMiddleware)
-logger.info("Middleware registered")
+logger.info("Correlation ID middleware registered")
 
 # Include API v1 routes
 app.include_router(api_router)

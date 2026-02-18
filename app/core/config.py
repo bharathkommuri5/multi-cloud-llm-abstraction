@@ -19,6 +19,14 @@ class Settings:
     GOOGLE_MODEL_ID = os.getenv("GOOGLE_MODEL_ID", "gemini-pro")
     # OAuth / Sign-in
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+    
+    # Microsoft / Azure AD
+    MICROSOFT_CLIENT_ID = os.getenv("MICROSOFT_CLIENT_ID")
+    MICROSOFT_CLIENT_SECRET = os.getenv("MICROSOFT_CLIENT_SECRET")
+    
+    # GitHub
+    GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
+    GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
 
     # Grok (generic HTTP-based integration)
     GROK_API_KEY = os.getenv("GROK_API_KEY")
