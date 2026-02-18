@@ -3,6 +3,7 @@ import boto3
 from app.core.config import settings
 from app.llm.base import BaseLLMClient
 from app.core.exceptions import LLMProviderError
+from app.core.logger import provider_logger as logger
 
 class BedrockClient(BaseLLMClient):
 
@@ -15,6 +16,7 @@ class BedrockClient(BaseLLMClient):
 
     def generate(self, prompt: str, temperature: float = 0.7, max_tokens: int = 300) -> str:
         try:
+            logger.debug(f"Calling AWS Bedrock ({self.model_id}) with temp={temperature}, max_tokens={max_tokens}")
             body = {
                 "messages": [{"role": "user", "content": prompt}],
                 "max_tokens": max_tokens,
@@ -29,7 +31,9 @@ class BedrockClient(BaseLLMClient):
             )
 
             response_body = json.loads(response["body"].read())
+            logger.info(f"AWS Bedrock call successful")
             return response_body["content"][0]["text"]
 
         except Exception as e:
+            logger.error(f"AWS Bedrock error: {str(e)}")
             raise LLMProviderError(f"AWS Bedrock error: {str(e)}")

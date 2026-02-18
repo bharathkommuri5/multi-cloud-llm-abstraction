@@ -2,7 +2,7 @@ import requests
 from app.core.config import settings
 from app.llm.base import BaseLLMClient
 from app.core.exceptions import LLMProviderError
-
+from app.core.logger import provider_logger as logger
 
 class GrokClient(BaseLLMClient):
 
@@ -16,6 +16,7 @@ class GrokClient(BaseLLMClient):
 
     def generate(self, prompt: str, temperature: float = 0.7, max_tokens: int = 300) -> str:
         try:
+            logger.debug(f"Calling Grok ({self.model}) via {self.api_url} with temp={temperature}, max_tokens={max_tokens}")
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json",
@@ -30,6 +31,7 @@ class GrokClient(BaseLLMClient):
 
             resp = requests.post(self.api_url, json=payload, headers=headers, timeout=30)
             resp.raise_for_status()
+            logger.info(f"Grok call successful")
 
             # Try to extract common fields; fall back to raw text
             data = resp.json() if resp.headers.get("Content-Type", "").startswith("application/json") else {}
@@ -49,4 +51,5 @@ class GrokClient(BaseLLMClient):
             return resp.text
 
         except Exception as e:
+            logger.error(f"Grok provider error: {str(e)}")
             raise LLMProviderError(f"Grok provider error: {str(e)}")

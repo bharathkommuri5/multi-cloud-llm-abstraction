@@ -7,9 +7,7 @@ from app.models.user import User
 from app.llm.factory import get_llm_client
 from app.core.exceptions import LLMProviderError
 from app.services.history_service import HistoryService
-import logging
-
-logger = logging.getLogger(__name__)
+from app.core.logger import service_logger as logger
 
 
 class LLMService:
@@ -107,15 +105,17 @@ class LLMService:
             db=db
         )
 
-        # Call LLM
+        #提取 Call LLM
         client = get_llm_client(provider.type)
         
         try:
+            logger.info(f"[User {user_id}] Calling {provider.name} provider with model {model.name}")
             result = client.generate(
                 prompt=prompt,
                 temperature=parameters_to_use.get("temperature", 0.7),
                 max_tokens=parameters_to_use.get("max_tokens", 300),
             )
+            logger.info(f"[User {user_id}] {provider.name} call completed successfully")
             
             status = "success"
             error_message = None
@@ -124,13 +124,13 @@ class LLMService:
             status = "error"
             error_message = str(e)
             result = None
-            logger.error(f"LLM Provider Error for user {user_id}: {error_message}")
+            logger.error(f"[User {user_id}] LLM Provider Error: {error_message}")
             raise ValueError(f"LLM Error: {error_message}")
         except Exception as e:
             status = "error"
             error_message = str(e)
             result = None
-            logger.error(f"Unexpected error for user {user_id}: {error_message}")
+            logger.error(f"[User {user_id}] Unexpected error during LLM call: {error_message}")
             raise ValueError("Internal server error")
         
         finally:
