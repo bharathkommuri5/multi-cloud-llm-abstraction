@@ -494,6 +494,48 @@
         <div class="particle"></div>
         <div class="particle"></div>
     </div>
+        <!-- Google Identity Services script and client-side token exchange -->
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <script>
+            // Replace with your Google client id or let user configure via environment when rendering server-side
+            const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID";
+
+            function handleCredentialResponse(response) {
+                const id_token = response.credential;
+                // Send id_token to backend to exchange for backend access token
+                fetch('/api/v1/auth/google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_token })
+                }).then(res => res.json()).then(data => {
+                    if (data.access_token) {
+                        document.getElementById('token_info').textContent = 'Access token received — paste into Swagger Authorize.';
+                        const btn = document.getElementById('copy_token_btn');
+                        btn.style.display = 'inline-block';
+                        btn.onclick = () => {
+                            navigator.clipboard.writeText(data.access_token);
+                            alert('Access token copied — paste into Swagger Authorize.');
+                        };
+                    } else if (data.detail) {
+                        document.getElementById('token_info').textContent = 'Auth error: ' + data.detail;
+                    }
+                }).catch(err => {
+                    document.getElementById('token_info').textContent = 'Auth request failed';
+                    console.error(err);
+                });
+            }
+
+            window.addEventListener('load', () => {
+                if (window.google && GOOGLE_CLIENT_ID) {
+                    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse });
+                    google.accounts.id.renderButton(document.getElementById('g_button'), { theme: 'filled_blue', size: 'large' });
+                } else {
+                    const el = document.getElementById('g_button');
+                    el.textContent = 'Configure GOOGLE_CLIENT_ID to enable Google Sign-In';
+                    el.style.color = 'white';
+                }
+            });
+        </script>
 
     <div class="container">
         <header>
@@ -525,6 +567,15 @@
                     <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </a>
+
+            <!-- Google Sign-In: button and token display for demo -->
+            <div id="g_signin_area" style="margin-top:1.25rem;">
+                <div id="g_button"></div>
+                <div style="margin-top:0.75rem;color:white;">
+                    <button id="copy_token_btn" style="display:none;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;background:#10b981;color:white">Copy Access Token</button>
+                    <div id="token_info" style="margin-top:0.5rem;font-size:0.9rem;color:rgba(255,255,255,0.85)"></div>
+                </div>
+            </div>
         </section>
 
         <section class="providers-section">

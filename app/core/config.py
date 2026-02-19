@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 class Settings:
     # Azure
     AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
@@ -14,6 +13,33 @@ class Settings:
     # AWS
     AWS_REGION = os.getenv("AWS_REGION")
     BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID")
+
+    # Google
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+    GOOGLE_MODEL_ID = os.getenv("GOOGLE_MODEL_ID", "gemini-pro")
+    # OAuth / Sign-in
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+    
+    # Microsoft / Azure AD
+    MICROSOFT_CLIENT_ID = os.getenv("MICROSOFT_CLIENT_ID")
+    MICROSOFT_CLIENT_SECRET = os.getenv("MICROSOFT_CLIENT_SECRET")
+    
+    # GitHub
+    GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
+    GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
+
+    # Grok (generic HTTP-based integration)
+    GROK_API_KEY = os.getenv("GROK_API_KEY")
+    GROK_API_URL = os.getenv("GROK_API_URL")
+    GROK_MODEL_ID = os.getenv("GROK_MODEL_ID")
+
+    # API token for simple bearer auth used in Swagger / API access
+    API_TOKEN = os.getenv("API_TOKEN")
+
+    # JWT settings for backend-issued tokens
+    JWT_SECRET = os.getenv("JWT_SECRET")
+    JWT_ALG = os.getenv("JWT_ALG", "HS256")
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "15"))
 
 
 settings = Settings()
