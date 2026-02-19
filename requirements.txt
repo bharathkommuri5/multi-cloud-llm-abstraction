@@ -3,7 +3,11 @@ uvicorn
 openai
 boto3
 google-generativeai
+google-genai
 python-dotenv
 pydantic[email]
 sqlalchemy
 jinja2
+requests
+google-auth
+pyjwt

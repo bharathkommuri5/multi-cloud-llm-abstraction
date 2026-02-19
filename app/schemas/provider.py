@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,ConfigDict
 from datetime import datetime
 
 class ProviderCreate(BaseModel):
@@ -13,5 +13,4 @@ class ProviderResponse(BaseModel):
     created_at: datetime | None
     updated_at: datetime | None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
